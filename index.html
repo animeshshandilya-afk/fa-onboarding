@@ -328,22 +328,26 @@ function renderL(stages) {
 }
 
 function renderPT(stages) {
+  const visible = stages.filter(s => !s.is_na);
   return `<div class="sec-title">All Stages</div>
-  <div class="s-list">${stages.map((s,i)=>{
-    const sr=s.is_na?'na':(s.actual_end?'done':sRag(s));
+  <div class="s-list">${visible.map((s,i)=>{
+    const sr=s.actual_end?'done':sRag(s);
     const r=RC[sr]||RC.pending;
-    return`<div class="s-item" style="border-left:3px solid ${r.c};${s.is_na?'opacity:.5;':''}">
-      <div class="s-num" style="${s.is_na?'background:var(--border);color:var(--light);':''}">${i+1}</div>
+    return`<div class="s-item" style="border-left:3px solid ${r.c};">
+      <div class="s-num">${i+1}</div>
       <div class="s-body">
-        <div class="s-label">${s.label}${s.is_na?' <span style="font-size:10px;color:var(--light);">(N/A)</span>':''}</div>
+        <div class="s-label">${s.label}</div>
         <div class="s-owner">Owner: ${s.owner||'—'}</div>
-        <div class="s-dates">Planned: ${fmtDate(s.planned_end)}${s.actual_end?' · Completed: '+fmtDate(s.actual_end):''}</div>
+        <div class="s-dates">
+          ${s.planned_end?`Planned: ${fmtDate(s.planned_end)}`:'No planned date set'}
+          ${s.actual_end?` · Completed: ${fmtDate(s.actual_end)}`:''}</div>
+        ${s.remark?`<div style="margin-top:6px;padding:6px 9px;background:#F0F4FF;border-left:3px solid #818CF8;border-radius:0 5px 5px 0;font-size:11px;color:#3730A3;line-height:1.5;"><span style="font-weight:600;">📌 </span>${s.remark}</div>`:''}
       </div>
-      ${badge(sr,sr==='done')}
+      <div class="s-right">
+        <span class="rag-badge" style="background:${r.bg};color:${r.c};border:1px solid ${r.b}40;">${r.d} ${r.l}</span>
+      </div>
     </div>`;
-  }).join('')}</div>`;
-}
-
+  }).join('')}</div>`;}
 function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
 </script>
 </body>
