@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldAssist — Onboarding Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#082255;--blue:#1797ce;--orange:#ffa53b;--off:#f5f7fa;--border:#dde3ec;--text:#1a1a2e;--mid:#4a5568;--light:#8a95a3;--green:#4ba428;--red:#d63031;--amber:#f59e0b;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Poppins',sans-serif;background:var(--off);color:var(--text);min-height:100vh;}
+  .hdr{background:var(--navy);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+  .hdr-logo{font-size:16px;font-weight:700;color:white;}.hdr-logo span{color:#7EC8E3;}
+  .hdr-tag{font-size:10px;color:var(--orange);font-weight:500;letter-spacing:.06em;}
+  .pin-screen{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+  .pin-card{background:white;border-radius:16px;padding:44px 36px;box-shadow:0 8px 40px rgba(8,34,85,.1);width:100%;max-width:360px;text-align:center;}
+  .pin-icon{font-size:44px;margin-bottom:16px;}
+  .pin-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+  .pin-sub{font-size:12px;color:var(--mid);margin-bottom:24px;line-height:1.6;}
+  .pin-input{width:100%;padding:14px;font-size:26px;font-weight:700;letter-spacing:10px;text-align:center;border:2px solid var(--border);border-radius:10px;font-family:'Poppins',sans-serif;outline:none;color:var(--navy);}
+  .pin-input:focus{border-color:var(--blue);}
+  .pin-input.err{border-color:var(--red);animation:shake .3s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .pin-btn{width:100%;margin-top:14px;padding:13px;background:var(--navy);color:white;border:none;border-radius:9px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+  .pin-btn:hover{background:#0c2d6b;}
+  .pin-err{color:var(--red);font-size:11px;margin-top:8px;display:none;}
+  .main{max-width:900px;margin:0 auto;padding:28px 20px;}
+  .vt-wrap{display:flex;gap:4px;background:var(--navy);border-radius:8px;padding:4px;width:fit-content;margin-bottom:20px;}
+  .vt-btn{padding:7px 16px;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:rgba(255,255,255,.6);}
+  .vt-btn.active{background:white;color:var(--navy);}
+  .proj-hdr{background:var(--navy);border-radius:12px;padding:24px 28px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;position:relative;overflow:hidden;}
+  .proj-hdr::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;border:40px solid rgba(23,151,206,.12);}
+  .ph-left{position:relative;z-index:1;}
+  .ph-lbl{font-size:10px;font-weight:600;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+  .ph-name{font-size:22px;font-weight:700;color:white;margin-bottom:2px;}
+  .ph-sub{font-size:11px;color:rgba(255,255,255,.5);}
+  .ph-right{position:relative;z-index:1;text-align:right;}
+  .ph-pct{font-size:38px;font-weight:700;color:white;line-height:1;}
+  .ph-pct-lbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+  .prog-outer{background:var(--border);border-radius:6px;height:10px;overflow:hidden;margin-bottom:6px;}
+  .prog-inner{height:100%;border-radius:6px;}
+  .prog-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--mid);margin-bottom:18px;}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+  .stat{background:white;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+  .stat-val{font-size:20px;font-weight:600;color:var(--navy);}
+  .stat-lbl{font-size:10px;color:var(--light);margin-top:2px;}
+  .sec-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px;}
+  .m-list,.s-list{display:flex;flex-direction:column;gap:8px;}
+  .m-item,.s-item{background:white;border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;}
+  .m-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .m-body{flex:1;}
+  .m-label{font-size:13px;font-weight:500;color:var(--text);}
+  .m-desc{font-size:11px;color:var(--mid);margin-top:2px;line-height:1.5;}
+  .s-num{width:26px;height:26px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--orange);flex-shrink:0;margin-top:1px;}
+  .s-body{flex:1;}
+  .s-label{font-size:13px;font-weight:500;color:var(--text);}
+  .s-owner{font-size:11px;color:var(--mid);margin-top:2px;}
+  .s-dates{font-size:10px;color:var(--light);margin-top:5px;}
+  .rag-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap;align-self:center;flex-shrink:0;}
+  .proj-card{background:white;border:0.5px solid var(--border);border-radius:12px;padding:18px;margin-bottom:12px;}
+  .pc-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+  .pc-name{font-size:14px;font-weight:600;color:var(--navy);}
+  .pc-sub{font-size:11px;color:var(--light);margin-top:2px;}
+  .pc-dots{display:flex;flex-wrap:wrap;gap:3px;margin:10px 0;}
+  .pc-dot{width:16px;height:16px;border-radius:3px;}
+  .pc-footer{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border);}
+  .view-btn{padding:6px 14px;background:var(--navy);color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;}
+  .back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-bottom:16px;padding:0;}
+  .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:60px auto;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .footer{text-align:center;padding:28px 20px;font-size:10px;color:var(--light);}
+  .footer a{color:var(--blue);text-decoration:none;}
+  @media(max-width:600px){.proj-hdr{flex-direction:column;gap:12px;}.ph-right{text-align:left;}.stats{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-logo"><span>Field</span>Assist</div>
+  <div class="hdr-tag">Onboarding Tracker</div>
+</div>
+
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-icon">🔐</div>
+    <div class="pin-title">Your Onboarding Tracker</div>
+    <div class="pin-sub">Enter the 4-digit PIN shared by your FieldAssist team to access your project status.</div>
+    <input class="pin-input" id="pin-input" type="number" placeholder="••••"
+      oninput="if(this.value.length>4)this.value=this.value.slice(0,4)"
+      onkeydown="if(event.key==='Enter')verifyPin()">
+    <button class="pin-btn" onclick="verifyPin()">Access My Projects →</button>
+    <div class="pin-err" id="pin-err">Incorrect PIN. Please try again.</div>
+  </div>
+</div>
+
+<div id="main-wrap" style="display:none;">
+  <div class="main" id="main-content"><div class="spinner"></div></div>
+  <div class="footer">Powered by <a href="https://www.fieldassist.com" target="_blank">FieldAssist</a> · Information › Insight › Impact</div>
+</div>
+
+<script>
+const AS = 'https://script.google.com/macros/s/AKfycby6dGWJRVBifytPPLJfAAAb77f3xehN5Ps0a1sk6xwxARapncXxUuJQAiAXc5IUuyzP/exec';
+const P = new URLSearchParams(window.location.search);
+const TOKEN = P.get('token')||'', AT = P.get('account')||'';
+let PROJECTS = [], VIEW = 'L';
+
+const RC = {
+  done:    {c:'#4ba428',bg:'#EAFAF1',b:'#86efac',l:'Complete',d:'●'},
+  green:   {c:'#4ba428',bg:'#EAFAF1',b:'#86efac',l:'On Track',d:'●'},
+  amber:   {c:'#f59e0b',bg:'#FFFBF0',b:'#fcd34d',l:'At Risk',d:'◉'},
+  red:     {c:'#d63031',bg:'#FFF5F5',b:'#fca5a5',l:'Delayed',d:'⚠'},
+  na:      {c:'#94A3B8',bg:'#F1F5F9',b:'#cbd5e1',l:'N/A',d:'—'},
+  pending: {c:'#94A3B8',bg:'#F1F5F9',b:'#cbd5e1',l:'Not Started',d:'○'},
+};
+
+function ss(raw) {
+  if(!raw)return[];
+  if(Array.isArray(raw))return raw;
+  try{return JSON.parse(raw);}catch(e){return[];}
+}
+function sRag(s) {
+  if(s.is_na)return'na';
+  if(s.actual_end)return'done';
+  if(!s.planned_end)return'pending';
+  const t=new Date();t.setHours(0,0,0,0);
+  const d=Math.ceil((t-new Date(s.planned_end))/86400000);
+  return d<=0?'green':d<=7?'amber':'red';
+}
+function pRag(stages) {
+  if(!stages||!stages.length)return'pending';
+  const a=stages.filter(s=>!s.is_na);
+  if(a.every(s=>!!s.actual_end))return'done';
+  const r=a.map(s=>sRag(s));
+  return r.includes('red')?'red':r.includes('amber')?'amber':'green';
+}
+function pct(stages) {
+  if(!stages||!stages.length)return 0;
+  const a=stages.filter(s=>!s.is_na);
+  if(!a.length)return 100;
+  return Math.round(a.filter(s=>!!s.actual_end).length/a.length*100);
+}
+function fmtDate(d) {
+  if(!d)return'—';
+  return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+function badge(rag,isDone) {
+  const r=RC[isDone?'done':rag]||RC.pending;
+  return `<span class="rag-badge" style="background:${r.bg};color:${r.c};border:1px solid ${r.b}40;">${r.d} ${r.l}</span>`;
+}
+
+async function verifyPin() {
+  const pin = document.getElementById('pin-input').value.trim();
+  if(!pin||pin.length<4){showErr('Enter your 4-digit PIN');return;}
+  document.getElementById('pin-err').style.display='none';
+  try {
+    if(TOKEN) {
+      const d = await (await fetch(AS+'?token='+encodeURIComponent(TOKEN))).json();
+      if(!d.success||!d.data){showErr('Project not found.');return;}
+      if(String(d.data['PIN']||d.data.pin||'').trim()!==pin){showErr('Incorrect PIN.');shake();return;}
+      PROJECTS=[d.data];
+      const at=d.data['Account Token']||d.data.accountToken||'';
+      if(at){try{const d2=await(await fetch(AS+'?account='+encodeURIComponent(at))).json();if(d2.success&&d2.data&&d2.data.length)PROJECTS=d2.data.filter(p=>String(p['PIN']||p.pin||'').trim()===pin);}catch(e){}}
+    } else if(AT) {
+      const d=await(await fetch(AS+'?account='+encodeURIComponent(AT))).json();
+      if(!d.success||!d.data||!d.data.length){showErr('No projects found.');return;}
+      const valid=d.data.filter(p=>String(p['PIN']||p.pin||'').trim()===pin);
+      if(!valid.length){showErr('Incorrect PIN.');shake();return;}
+      PROJECTS=valid;
+    } else {showErr('Invalid link.');return;}
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('main-wrap').style.display='block';
+    renderMain();
+  } catch(e){showErr('Could not load. Please try again.');}
+}
+function showErr(m){const e=document.getElementById('pin-err');e.textContent=m;e.style.display='block';}
+function shake(){const e=document.getElementById('pin-input');e.classList.add('err');setTimeout(()=>e.classList.remove('err'),600);}
+
+function renderMain() {
+  const c=document.getElementById('main-content');
+  PROJECTS.length===1?renderProject(c,0):renderOverview(c);
+}
+
+function renderOverview(c) {
+  const acc=PROJECTS[0]?.['Account Name']||PROJECTS[0]?.account||'—';
+  const active=PROJECTS.filter(p=>p['Status']!=='Completed');
+  const done=PROJECTS.filter(p=>p['Status']==='Completed');
+  let h=`<div style="margin-bottom:24px;">
+    <div style="font-size:22px;font-weight:700;color:var(--navy);">${acc}</div>
+    <div style="font-size:12px;color:var(--light);margin-top:4px;">${PROJECTS.length} project${PROJECTS.length!==1?'s':''} · ${active.length} active · ${done.length} completed</div>
+  </div>`;
+  if(active.length){h+=`<div class="sec-title">Active Projects</div>`;h+=active.map(p=>projCard(p)).join('');}
+  if(done.length){h+=`<div class="sec-title" style="margin-top:20px;">Completed Projects</div>`;h+=done.map(p=>projCard(p)).join('');}
+  c.innerHTML=h;
+}
+
+function projCard(p) {
+  const stages=ss(p['Stages']||p.stages);
+  const pc=pct(stages),rag=pRag(stages);
+  const isDone=p['Status']==='Completed';
+  const r=RC[isDone?'done':rag]||RC.pending;
+  const golive=p['Target Go-Live']||p.goliveTarget||'';
+  const tok=p['Token']||p.token||'';
+  const today=new Date();
+  const dl=golive?Math.ceil((new Date(golive)-today)/86400000):null;
+  return `<div class="proj-card">
+    <div class="pc-hdr">
+      <div>
+        <div class="pc-name">${p['Project Name']||p.projectName||'—'}</div>
+        <div class="pc-sub">${p['Module']||p.module||'—'} · Target: ${fmtDate(golive)}</div>
+      </div>
+      ${badge(rag,isDone)}
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mid);margin-bottom:4px;">
+        <span>${stages.filter(s=>!s.is_na&&s.actual_end).length} / ${stages.filter(s=>!s.is_na).length} stages</span>
+        <span style="font-weight:600;color:${r.c};">${pc}%</span>
+      </div>
+      <div class="prog-outer" style="margin-bottom:0;"><div class="prog-inner" style="width:${pc}%;background:${r.c};"></div></div>
+    </div>
+    <div class="pc-dots">${stages.map(s=>{const sr=s.is_na?'na':(s.actual_end?'done':sRag(s));const sc=RC[sr]||RC.pending;return`<div class="pc-dot" title="${s.label}: ${sc.l}" style="background:${sc.bg};border:1.5px solid ${sc.c};"></div>`;}).join('')}</div>
+    <div class="pc-footer">
+      <div style="font-size:11px;color:var(--light);">${dl!==null?(isDone?'✓ Complete':dl<0?`<span style="color:var(--red);font-weight:600;">${Math.abs(dl)}d overdue</span>`:`${dl}d remaining`):'—'}</div>
+      <button class="view-btn" onclick="viewProj('${tok}')">View Details →</button>
+    </div>
+  </div>`;
+}
+
+function viewProj(tok) {
+  const idx=PROJECTS.findIndex(p=>(p['Token']||p.token)===tok);
+  if(idx<0)return;
+  const c=document.getElementById('main-content');
+  c.innerHTML='';
+  if(PROJECTS.length>1){
+    const btn=document.createElement('button');
+    btn.className='back-btn';
+    btn.innerHTML='← Back to all projects';
+    btn.onclick=()=>renderOverview(c);
+    c.appendChild(btn);
+  }
+  const wrap=document.createElement('div');
+  c.appendChild(wrap);
+  renderProject(wrap,idx);
+}
+
+function renderProject(c,idx) {
+  const p=PROJECTS[idx];
+  if(!p)return;
+  const stages=ss(p['Stages']||p.stages);
+  const pc=pct(stages),rag=pRag(stages);
+  const isDone=p['Status']==='Completed';
+  const r=RC[isDone?'done':rag]||RC.pending;
+  const golive=p['Target Go-Live']||p.goliveTarget||'';
+  const today=new Date();
+  const dl=golive?Math.ceil((new Date(golive)-today)/86400000):null;
+  const acc=p['Account Name']||p.account||'—';
+  const projName=p['Project Name']||p.projectName||acc;
+
+  c.innerHTML=`
+    <div class="proj-hdr">
+      <div class="ph-left">
+        <div class="ph-lbl">FieldAssist · ${p['Module']||p.module||'Onboarding'}</div>
+        <div class="ph-name">${projName}</div>
+        <div class="ph-sub">${acc}${isDone?' · ✓ Completed':''}</div>
+      </div>
+      <div class="ph-right">
+        <div class="ph-pct" style="color:${isDone?'#86efac':'white'};">${pc}%</div>
+        <div class="ph-pct-lbl">Complete</div>
+      </div>
+    </div>
+    <div class="prog-outer"><div class="prog-inner" style="width:${pc}%;background:${isDone?'#4ba428':r.c};"></div></div>
+    <div class="prog-meta">
+      <span>${stages.filter(s=>!s.is_na&&s.actual_end).length} of ${stages.filter(s=>!s.is_na).length} stages complete</span>
+      <span>${golive?'Target: '+fmtDate(golive):''}</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val">${stages.filter(s=>!s.is_na&&s.actual_end).length} / ${stages.filter(s=>!s.is_na).length}</div><div class="stat-lbl">Stages done</div></div>
+      <div class="stat"><div class="stat-val">${golive?new Date(golive).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'—'}</div><div class="stat-lbl">Target end date</div></div>
+      <div class="stat"><div class="stat-val" style="color:${dl!==null&&dl<0?'var(--red)':dl!==null&&dl<=7?'var(--amber)':'var(--navy)'};">${dl!==null?(isDone?'✓':(dl<0?Math.abs(dl)+'d late':dl+'d')):'—'}</div><div class="stat-lbl">${isDone?'Done':'Days to end'}</div></div>
+    </div>
+    <div class="vt-wrap">
+      <button class="vt-btn active" id="vt-L" onclick="sv('L','${idx}')">Leadership View</button>
+      <button class="vt-btn" id="vt-P" onclick="sv('P','${idx}')">Project Team View</button>
+    </div>
+    <div id="pv-L">${renderL(stages)}</div>
+    <div id="pv-P" style="display:none;">${renderPT(stages)}</div>`;
+}
+
+function sv(v,idx){
+  document.getElementById('pv-L').style.display=v==='L'?'block':'none';
+  document.getElementById('pv-P').style.display=v==='P'?'block':'none';
+  document.getElementById('vt-L').classList.toggle('active',v==='L');
+  document.getElementById('vt-P').classList.toggle('active',v==='P');
+}
+
+function renderL(stages) {
+  // Group stages into milestone buckets
+  const buckets=[];
+  let cur=null;
+  stages.forEach((s,i)=>{
+    const lbl=s.label.toLowerCase();
+    if(lbl.includes('brd')){if(!cur||cur.key!=='brd'){cur={key:'brd',icon:'📋',title:'Project Initiation',desc:'Requirements scoped and signed off',stages:[]};buckets.push(cur);}}
+    else if(lbl.includes('config')||lbl.includes('setup')||lbl.includes('data collect')||lbl.includes('mapping')||lbl.includes('migration')){if(!cur||cur.key!=='setup'){cur={key:'setup',icon:'⚙️',title:'Setup & Configuration',desc:'Platform configured for your business requirements',stages:[]};buckets.push(cur);}}
+    else if(lbl.includes('uat')||lbl.includes('test')){if(!cur||cur.key!=='uat'){cur={key:'uat',icon:'✅',title:'Testing & Validation',desc:'System validated against your business workflows',stages:[]};buckets.push(cur);}}
+    else if(lbl.includes('train')){if(!cur||cur.key!=='train'){cur={key:'train',icon:'🎓',title:'Training & Enablement',desc:'Your team trained and ready to use the platform',stages:[]};buckets.push(cur);}}
+    else if(lbl.includes('go-live')||lbl.includes('golive')||lbl.includes('go live')||lbl.includes('pilot')||lbl.includes('deploy')){if(!cur||cur.key!=='golive'){cur={key:'golive',icon:'🌟',title:'Go-Live',desc:'Platform live and your field force operating on it',stages:[]};buckets.push(cur);}}
+    else if(lbl.includes('hypercare')||lbl.includes('mbr')||lbl.includes('sign-off')||lbl.includes('signoff')||lbl.includes('sign off')){if(!cur||cur.key!=='post'){cur={key:'post',icon:'🏆',title:'Value Realisation',desc:'Hypercare, health review and formal sign-off',stages:[]};buckets.push(cur);}}
+    else{if(!cur){cur={key:'other',icon:'🔧',title:'Execution',desc:'Core project activities',stages:[]};buckets.push(cur);}}
+    if(cur)cur.stages.push(s);
+  });
+
+  return `<div class="sec-title">Milestone Overview</div>
+  <div class="m-list">${buckets.filter(b=>b.stages.length).map(b=>{
+    const br=pRag(b.stages);
+    const allDone=b.stages.filter(s=>!s.is_na).every(s=>!!s.actual_end);
+    const rag=allDone?'done':br;
+    const r=RC[rag]||RC.pending;
+    const dn=b.stages.filter(s=>!s.is_na&&s.actual_end).length;
+    const tot=b.stages.filter(s=>!s.is_na).length;
+    return`<div class="m-item" style="border-left:3px solid ${r.c};">
+      <div class="m-icon" style="background:${r.bg};">${b.icon}</div>
+      <div class="m-body">
+        <div class="m-label">${b.title}</div>
+        <div class="m-desc">${b.desc}</div>
+        <div style="font-size:10px;color:var(--light);margin-top:4px;">${dn} of ${tot} stage${tot!==1?'s':''} complete</div>
+      </div>
+      ${badge(rag,allDone)}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderPT(stages) {
+  return `<div class="sec-title">All Stages</div>
+  <div class="s-list">${stages.map((s,i)=>{
+    const sr=s.is_na?'na':(s.actual_end?'done':sRag(s));
+    const r=RC[sr]||RC.pending;
+    return`<div class="s-item" style="border-left:3px solid ${r.c};${s.is_na?'opacity:.5;':''}">
+      <div class="s-num" style="${s.is_na?'background:var(--border);color:var(--light);':''}">${i+1}</div>
+      <div class="s-body">
+        <div class="s-label">${s.label}${s.is_na?' <span style="font-size:10px;color:var(--light);">(N/A)</span>':''}</div>
+        <div class="s-owner">Owner: ${s.owner||'—'}</div>
+        <div class="s-dates">Planned: ${fmtDate(s.planned_end)}${s.actual_end?' · Completed: '+fmtDate(s.actual_end):''}</div>
+      </div>
+      ${badge(sr,sr==='done')}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+</script>
+</body>
+</html>
