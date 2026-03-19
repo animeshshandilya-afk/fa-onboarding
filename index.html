@@ -155,14 +155,14 @@ async function verifyPin() {
     if(TOKEN) {
       const d = await (await fetch(AS+'?token='+encodeURIComponent(TOKEN))).json();
       if(!d.success||!d.data){showErr('Project not found.');return;}
-      if(String(d.data['PIN']||d.data.pin||'').trim()!==pin){showErr('Incorrect PIN.');shake();return;}
+      if(String(d.data['PIN']||d.data.pin||'').trim() !== String(pin).trim()){showErr('Incorrect PIN.');shake();return;}
       PROJECTS=[d.data];
       const at=d.data['Account Token']||d.data.accountToken||'';
-      if(at){try{const d2=await(await fetch(AS+'?account='+encodeURIComponent(at))).json();if(d2.success&&d2.data&&d2.data.length)PROJECTS=d2.data.filter(p=>String(p['PIN']||p.pin||'').trim()===pin);}catch(e){}}
+      if(at){try{const d2=await(await fetch(AS+'?account='+encodeURIComponent(at))).json();if(d2.success&&d2.data&&d2.data.length)PROJECTS=d2.data.filter(p=>String(p['PIN']||p.pin||'').trim()===String(pin).trim());}catch(e){}}
     } else if(AT) {
       const d=await(await fetch(AS+'?account='+encodeURIComponent(AT))).json();
       if(!d.success||!d.data||!d.data.length){showErr('No projects found.');return;}
-      const valid=d.data.filter(p=>String(p['PIN']||p.pin||'').trim()===pin);
+      const valid=d.data.filter(p=>String(p['PIN']||p.pin||'').trim()===String(pin).trim());
       if(!valid.length){showErr('Incorrect PIN.');shake();return;}
       PROJECTS=valid;
     } else {showErr('Invalid link.');return;}
